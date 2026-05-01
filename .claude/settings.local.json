@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pip install *)",
+      "Bash(python -m pytest tests/test_snake.py -v)",
+      "Bash(python -m pytest tests/test_food.py -v)",
+      "Bash(python -m pytest tests/test_score.py tests/test_obstacles.py tests/test_achievements.py -v)",
+      "Bash(python -m pytest --cov=utils --cov=snake --cov=food --cov=game --cov-report=term-missing -v)",
+      "Bash(python -c \"import game; import food; import snake; import ui; import utils; print\\('All modules import successfully'\\)\")"
+    ]
+  }
+}

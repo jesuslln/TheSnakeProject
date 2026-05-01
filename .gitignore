@@ -1,0 +1,12 @@
+#Cache & Test Data
+__pycache__/*
+tests/__pycache__/*
+.pytest_cache/*
+
+
+#local Data
+local/*
+.coverage
+
+# Txt files
+*.txt
