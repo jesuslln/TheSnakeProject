@@ -5,7 +5,7 @@ from dataclasses import dataclass
 
 import pygame
 
-from food import FoodItem, FoodType, FOOD_POINTS
+from food import FoodItem, FoodType
 
 # Colours
 _BLACK = (0, 0, 0)
@@ -31,18 +31,24 @@ class AchievementNotification:
 # Score bar
 # ---------------------------------------------------------------------------
 
+
 class ScoreBar:
     _GEAR_SIZE = 28
     _PAD = 8
 
-    def __init__(self, screen_width: int, bar_height: int,
-                 font: pygame.font.Font) -> None:
+    def __init__(
+        self, screen_width: int, bar_height: int, font: pygame.font.Font
+    ) -> None:
         self._w = screen_width
         self._h = bar_height
         self._font = font
 
-    def draw(self, surface: pygame.Surface, score: int,
-             notification: AchievementNotification | None) -> pygame.Rect:
+    def draw(
+        self,
+        surface: pygame.Surface,
+        score: int,
+        notification: AchievementNotification | None,
+    ) -> pygame.Rect:
         pygame.draw.rect(surface, _BAR_BG, (0, 0, self._w, self._h))
 
         # Gear icon (simple rectangle placeholder)
@@ -64,7 +70,9 @@ class ScoreBar:
         # Achievement notification
         if notification:
             notif_surf = self._font.render(f"★ {notification.title}", True, _GOLD)
-            surface.blit(notif_surf, (self._PAD, (self._h - notif_surf.get_height()) // 2))
+            surface.blit(
+                notif_surf, (self._PAD, (self._h - notif_surf.get_height()) // 2)
+            )
 
         return gear_rect
 
@@ -73,9 +81,9 @@ class ScoreBar:
 # Game board
 # ---------------------------------------------------------------------------
 
+
 class GameBoard:
-    def __init__(self, board_rect: pygame.Rect, grid_cols: int,
-                 grid_rows: int) -> None:
+    def __init__(self, board_rect: pygame.Rect, grid_cols: int, grid_rows: int) -> None:
         self._rect = board_rect
         self._cols = grid_cols
         self._rows = grid_rows
@@ -88,17 +96,21 @@ class GameBoard:
             self._rect.top + row * self._cell_h,
         )
 
-    def draw(self, surface: pygame.Surface,
-             snake_body: list[tuple[int, int]],
-             food_items: list[FoodItem],
-             obstacle_cells: list[tuple[int, int]]) -> None:
+    def draw(
+        self,
+        surface: pygame.Surface,
+        snake_body: list[tuple[int, int]],
+        food_items: list[FoodItem],
+        obstacle_cells: list[tuple[int, int]],
+    ) -> None:
         pygame.draw.rect(surface, _GRAY, self._rect)
 
         # Obstacles
         for col, row in obstacle_cells:
             x, y = self.cell_to_pixel(col, row)
-            pygame.draw.rect(surface, _RED,
-                             (x + 1, y + 1, self._cell_w - 2, self._cell_h - 2))
+            pygame.draw.rect(
+                surface, _RED, (x + 1, y + 1, self._cell_w - 2, self._cell_h - 2)
+            )
 
         # Food
         for item in food_items:
@@ -110,25 +122,31 @@ class GameBoard:
                     colour = (240, 220, 50)
                 case FoodType.GOLDEN_APPLE:
                     colour = _GOLD
-            pygame.draw.ellipse(surface, colour,
-                                (x + 2, y + 2, self._cell_w - 4, self._cell_h - 4))
+            pygame.draw.ellipse(
+                surface, colour, (x + 2, y + 2, self._cell_w - 4, self._cell_h - 4)
+            )
 
         # Snake
         for i, (col, row) in enumerate(snake_body):
             x, y = self.cell_to_pixel(col, row)
             colour = _GREEN if i == 0 else _DARK_GREEN
-            pygame.draw.rect(surface, colour,
-                             (x + 1, y + 1, self._cell_w - 2, self._cell_h - 2),
-                             border_radius=3)
+            pygame.draw.rect(
+                surface,
+                colour,
+                (x + 1, y + 1, self._cell_w - 2, self._cell_h - 2),
+                border_radius=3,
+            )
 
 
 # ---------------------------------------------------------------------------
 # Name entry screen
 # ---------------------------------------------------------------------------
 
+
 class NameEntryScreen:
-    def __init__(self, screen_width: int, screen_height: int,
-                 font: pygame.font.Font) -> None:
+    def __init__(
+        self, screen_width: int, screen_height: int, font: pygame.font.Font
+    ) -> None:
         self._w = screen_width
         self._h = screen_height
         self._font = font
@@ -160,7 +178,9 @@ class NameEntryScreen:
 
         cursor = "|" if self._cursor_visible else " "
         input_surf = self._font.render(self.text + cursor, True, _GREEN)
-        surface.blit(input_surf, input_surf.get_rect(center=(self._w // 2, self._h // 2 + 10)))
+        surface.blit(
+            input_surf, input_surf.get_rect(center=(self._w // 2, self._h // 2 + 10))
+        )
 
         hint = self._font.render("Press Enter to confirm", True, _LIGHT_GRAY)
         surface.blit(hint, hint.get_rect(center=(self._w // 2, self._h // 2 + 60)))
@@ -171,15 +191,19 @@ class NameEntryScreen:
 # ---------------------------------------------------------------------------
 
 _DIFFICULTY_OPTIONS: list[tuple[str, int | None]] = [
-    ("Slow", 5), ("Normal", 10), ("Fast", 15), ("Custom", None)
+    ("Slow", 5),
+    ("Normal", 10),
+    ("Fast", 15),
+    ("Custom", None),
 ]
 
 _PLACEHOLDER_SONGS = ["Song 1", "Song 2", "Song 3"]
 
 
 class SettingsMenu:
-    def __init__(self, screen_width: int, screen_height: int,
-                 font: pygame.font.Font) -> None:
+    def __init__(
+        self, screen_width: int, screen_height: int, font: pygame.font.Font
+    ) -> None:
         self._w = screen_width
         self._h = screen_height
         self._font = font
@@ -190,8 +214,9 @@ class SettingsMenu:
         self._selected_song: int = 0
         self._rects: dict[str, pygame.Rect] = {}
 
-    def handle_event(self, event: pygame.event.Event,
-                     achievements: dict[str, bool]) -> dict | None:
+    def handle_event(
+        self, event: pygame.event.Event, achievements: dict[str, bool]
+    ) -> dict | None:
         if event.type != pygame.KEYDOWN and event.type != pygame.MOUSEBUTTONDOWN:
             return None
 
@@ -230,7 +255,9 @@ class SettingsMenu:
                         return {"type": "song_change", "song": song}
                     return None
             # Toggle achievements
-            if "ach_toggle" in self._rects and self._rects["ach_toggle"].collidepoint(pos):
+            if "ach_toggle" in self._rects and self._rects["ach_toggle"].collidepoint(
+                pos
+            ):
                 self._show_achievements = not self._show_achievements
                 return None
             # Close button
@@ -247,8 +274,12 @@ class SettingsMenu:
         panel_w, panel_h = 420, 480
         panel_x = (self._w - panel_w) // 2
         panel_y = (self._h - panel_h) // 2
-        pygame.draw.rect(surface, (30, 30, 40),
-                         (panel_x, panel_y, panel_w, panel_h), border_radius=12)
+        pygame.draw.rect(
+            surface,
+            (30, 30, 40),
+            (panel_x, panel_y, panel_w, panel_h),
+            border_radius=12,
+        )
 
         y = panel_y + 20
         title = self._font.render("SETTINGS", True, _WHITE)
@@ -276,7 +307,9 @@ class SettingsMenu:
             y += 36
 
         # Volume (cosmetic placeholder)
-        vol_label = self._font.render(f"Volume: {int(self._volume * 100)}%", True, _LIGHT_GRAY)
+        vol_label = self._font.render(
+            f"Volume: {int(self._volume * 100)}%", True, _LIGHT_GRAY
+        )
         surface.blit(vol_label, (panel_x + 20, y))
         y += 36
 
@@ -299,7 +332,9 @@ class SettingsMenu:
         pygame.draw.rect(surface, _GRAY, ach_r, border_radius=6)
         ach_txt = self._font.render(
             "Hide Achievements" if self._show_achievements else "Show Achievements",
-            True, _WHITE)
+            True,
+            _WHITE,
+        )
         surface.blit(ach_txt, ach_txt.get_rect(center=ach_r.center))
         y += 40
 
@@ -322,9 +357,11 @@ class SettingsMenu:
 # Game over screen
 # ---------------------------------------------------------------------------
 
+
 class GameOverScreen:
-    def __init__(self, screen_width: int, screen_height: int,
-                 font: pygame.font.Font) -> None:
+    def __init__(
+        self, screen_width: int, screen_height: int, font: pygame.font.Font
+    ) -> None:
         self._w = screen_width
         self._h = screen_height
         self._font = font
@@ -336,10 +373,14 @@ class GameOverScreen:
 
         cx = self._w // 2
         over_surf = self._font.render("GAME OVER", True, _RED)
-        surface.blit(over_surf, over_surf.get_rect(centerx=cx, centery=self._h // 2 - 50))
+        surface.blit(
+            over_surf, over_surf.get_rect(centerx=cx, centery=self._h // 2 - 50)
+        )
 
         score_surf = self._font.render(f"Score: {final_score}", True, _WHITE)
         surface.blit(score_surf, score_surf.get_rect(centerx=cx, centery=self._h // 2))
 
         hint_surf = self._font.render("Press Space to play again", True, _LIGHT_GRAY)
-        surface.blit(hint_surf, hint_surf.get_rect(centerx=cx, centery=self._h // 2 + 50))
+        surface.blit(
+            hint_surf, hint_surf.get_rect(centerx=cx, centery=self._h // 2 + 50)
+        )

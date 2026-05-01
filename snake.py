@@ -2,14 +2,18 @@ from collections import deque
 
 
 class Snake:
-    def __init__(self, start_col: int, start_row: int, grid_cols: int, grid_rows: int) -> None:
+    def __init__(
+        self, start_col: int, start_row: int, grid_cols: int, grid_rows: int
+    ) -> None:
         self._cols = grid_cols
         self._rows = grid_rows
-        self._body: deque[tuple[int, int]] = deque([
-            (start_col, start_row),
-            (start_col - 1, start_row),
-            (start_col - 2, start_row),
-        ])
+        self._body: deque[tuple[int, int]] = deque(
+            [
+                (start_col, start_row),
+                (start_col - 1, start_row),
+                (start_col - 2, start_row),
+            ]
+        )
         self._direction: tuple[int, int] = (1, 0)
         self._pending: tuple[int, int] = (1, 0)
         self._grew: bool = False
@@ -21,8 +25,10 @@ class Snake:
     def move(self) -> None:
         self._direction = self._pending
         hc, hr = self._body[0]
-        new_head = ((hc + self._direction[0]) % self._cols,
-                    (hr + self._direction[1]) % self._rows)
+        new_head = (
+            (hc + self._direction[0]) % self._cols,
+            (hr + self._direction[1]) % self._rows,
+        )
         self._body.appendleft(new_head)
         if not self._grew:
             self._body.pop()
@@ -36,8 +42,10 @@ class Snake:
 
     def cell_in_front(self) -> tuple[int, int]:
         hc, hr = self._body[0]
-        return ((hc + self._direction[0]) % self._cols,
-                (hr + self._direction[1]) % self._rows)
+        return (
+            (hc + self._direction[0]) % self._cols,
+            (hr + self._direction[1]) % self._rows,
+        )
 
     def occupies(self, col: int, row: int) -> bool:
         return (col, row) in self._body

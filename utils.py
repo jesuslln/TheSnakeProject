@@ -38,6 +38,7 @@ def get_total_songs() -> int:
 
 # --- Path helpers ---
 
+
 def get_config_path() -> Path:
     return BASE_DIR / "config.json"
 
@@ -56,6 +57,7 @@ def get_achievements_path(username: str) -> Path:
 
 # --- JSON helpers ---
 
+
 def read_json(path: Path) -> dict | list:
     try:
         return json.loads(path.read_text(encoding="utf-8"))
@@ -69,6 +71,7 @@ def write_json(path: Path, data: dict | list) -> None:
 
 
 # --- Config ---
+
 
 def get_saved_username() -> str | None:
     data = read_json(get_config_path())
@@ -85,6 +88,7 @@ def ensure_user_dir(username: str) -> None:
 
 # --- High scores ---
 
+
 def load_highscores(username: str) -> list[dict]:
     data = read_json(get_highscores_path(username))
     return data if isinstance(data, list) else []
@@ -92,12 +96,15 @@ def load_highscores(username: str) -> list[dict]:
 
 def save_highscore(username: str, score: int, duration: float) -> None:
     scores = load_highscores(username)
-    scores.append({"score": score, "duration": duration, "date": date.today().isoformat()})
+    scores.append(
+        {"score": score, "duration": duration, "date": date.today().isoformat()}
+    )
     scores.sort(key=lambda e: e["score"], reverse=True)
     write_json(get_highscores_path(username), scores[:10])
 
 
 # --- Achievements ---
+
 
 def load_achievements(username: str) -> dict[str, bool]:
     data = read_json(get_achievements_path(username))
