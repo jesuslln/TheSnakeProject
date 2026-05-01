@@ -43,8 +43,12 @@ class FoodManager:
         self._last_regular_spawn = now
         self._last_golden_spawn = now
 
-    def update(self, now: float, snake_body: list[tuple[int, int]],
-               snake_head_next: tuple[int, int]) -> None:
+    def update(
+        self,
+        now: float,
+        snake_body: list[tuple[int, int]],
+        snake_head_next: tuple[int, int],
+    ) -> None:
         existing = [(i.col, i.row) for i in self.items]
         if self.golden:
             existing.append((self.golden.col, self.golden.row))
@@ -52,7 +56,10 @@ class FoodManager:
         # Regular food
         if len(self.items) == 0:
             self._spawn_regular(now, snake_body, snake_head_next, existing)
-        elif now - self._last_regular_spawn >= REGULAR_INTERVAL and len(self.items) < MAX_REGULAR_FOOD:
+        elif (
+            now - self._last_regular_spawn >= REGULAR_INTERVAL
+            and len(self.items) < MAX_REGULAR_FOOD
+        ):
             self._spawn_regular(now, snake_body, snake_head_next, existing)
 
         # Golden apple
@@ -81,19 +88,30 @@ class FoodManager:
         self._last_regular_spawn += delta
         self._last_golden_spawn += delta
 
-    def _spawn_regular(self, now: float, snake_body: list[tuple[int, int]],
-                       forbidden: tuple[int, int],
-                       existing_food: list[tuple[int, int]]) -> None:
+    def _spawn_regular(
+        self,
+        now: float,
+        snake_body: list[tuple[int, int]],
+        forbidden: tuple[int, int],
+        existing_food: list[tuple[int, int]],
+    ) -> None:
         cell = self._find_valid_cell(snake_body, forbidden, existing_food)
         if cell:
             food_type = random.choice([FoodType.APPLE, FoodType.BANANA])
             self.items.append(FoodItem(cell[0], cell[1], food_type, now))
             self._last_regular_spawn = now
 
-    def _find_valid_cell(self, snake_body: list[tuple[int, int]],
-                         forbidden: tuple[int, int],
-                         existing_food: list[tuple[int, int]]) -> tuple[int, int] | None:
+    def _find_valid_cell(
+        self,
+        snake_body: list[tuple[int, int]],
+        forbidden: tuple[int, int],
+        existing_food: list[tuple[int, int]],
+    ) -> tuple[int, int] | None:
         occupied = set(snake_body) | {forbidden} | set(existing_food)
-        free = [(c, r) for c in range(self._cols) for r in range(self._rows)
-                if (c, r) not in occupied]
+        free = [
+            (c, r)
+            for c in range(self._cols)
+            for r in range(self._rows)
+            if (c, r) not in occupied
+        ]
         return random.choice(free) if free else None

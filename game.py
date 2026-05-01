@@ -4,7 +4,7 @@ import math
 import random
 import time
 from collections import deque
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import IntEnum
 
 import utils
@@ -13,6 +13,7 @@ import utils
 # ---------------------------------------------------------------------------
 # Enums
 # ---------------------------------------------------------------------------
+
 
 class GameState(IntEnum):
     NAME_ENTRY = 0
@@ -35,6 +36,7 @@ class Action(IntEnum):
 # ---------------------------------------------------------------------------
 # Session state
 # ---------------------------------------------------------------------------
+
 
 @dataclass
 class SessionState:
@@ -71,6 +73,7 @@ def _new_session() -> SessionState:
 # Obstacle
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class Obstacle:
     cells: list[tuple[int, int]]
@@ -91,10 +94,10 @@ class ObstacleManager:
         self.obstacles.clear()
         self._last_spawn = now
 
-    def update(self, now: float, elapsed_game_time: float,
-               snake_body: list[tuple[int, int]]) -> None:
-        self.obstacles = [o for o in self.obstacles
-                          if now - o.spawn_time < o.duration]
+    def update(
+        self, now: float, elapsed_game_time: float, snake_body: list[tuple[int, int]]
+    ) -> None:
+        self.obstacles = [o for o in self.obstacles if now - o.spawn_time < o.duration]
 
         if now - self._last_spawn >= self.SPAWN_INTERVAL:
             length = min(3, math.floor(elapsed_game_time / 60) + 1)
@@ -103,8 +106,9 @@ class ObstacleManager:
                 self.obstacles.append(Obstacle(cells=cells, spawn_time=now))
             self._last_spawn = now
 
-    def _pick_wall(self, length: int,
-                   snake_body: list[tuple[int, int]]) -> list[tuple[int, int]] | None:
+    def _pick_wall(
+        self, length: int, snake_body: list[tuple[int, int]]
+    ) -> list[tuple[int, int]] | None:
         occupied = set(snake_body) | {c for o in self.obstacles for c in o.cells}
         for _ in range(20):
             orientation = random.choice(("H", "V"))
@@ -134,6 +138,7 @@ class ObstacleManager:
 # Score calculator
 # ---------------------------------------------------------------------------
 
+
 class ScoreCalculator:
     TIME_THRESHOLDS = [(14, 10), (7, 5), (0, 1)]
 
@@ -143,8 +148,9 @@ class ScoreCalculator:
                 return rate
         return 1
 
-    def apply_time_bonus(self, session: SessionState, delta: float,
-                         snake_length: int) -> None:
+    def apply_time_bonus(
+        self, session: SessionState, delta: float, snake_length: int
+    ) -> None:
         session.score += self.time_bonus_rate(snake_length) * delta
 
     def check_multiplier(self, session: SessionState, now: float) -> float:
@@ -158,9 +164,11 @@ class ScoreCalculator:
 # Achievement checker
 # ---------------------------------------------------------------------------
 
+
 class AchievementChecker:
-    def check_all(self, session: SessionState, existing: dict[str, bool],
-                  event: str, now: float) -> list[str]:
+    def check_all(
+        self, session: SessionState, existing: dict[str, bool], event: str, now: float
+    ) -> list[str]:
         earned: list[str] = []
 
         def _check(name: str, condition: bool) -> None:
@@ -190,8 +198,7 @@ class AchievementChecker:
         # Music easter eggs
         if event == "song_change":
             _check("Music Enjoyer", len(session.songs_played) >= 2)
-            _check("Music Lover",
-                   len(session.songs_played) >= utils.get_total_songs())
+            _check("Music Lover", len(session.songs_played) >= utils.get_total_songs())
 
         return earned
 
@@ -200,8 +207,10 @@ class AchievementChecker:
 # Input translation (only place pygame key constants are used for game logic)
 # ---------------------------------------------------------------------------
 
+
 def events_to_actions(events: list) -> list[Action]:
     import pygame
+
     actions: list[Action] = []
     for event in events:
         if event.type == pygame.QUIT:
@@ -229,6 +238,7 @@ def events_to_actions(events: list) -> list[Action]:
 # Main Game class
 # ---------------------------------------------------------------------------
 
+
 class Game:
     SCREEN_WIDTH = 800
     SCREEN_HEIGHT = 800
@@ -240,8 +250,14 @@ class Game:
         import pygame
         from snake import Snake
         from food import FoodManager
-        from ui import (ScoreBar, GameBoard, NameEntryScreen,
-                        SettingsMenu, GameOverScreen, AchievementNotification)
+        from ui import (
+            ScoreBar,
+            GameBoard,
+            NameEntryScreen,
+            SettingsMenu,
+            GameOverScreen,
+            AchievementNotification,
+        )
 
         pygame.init()
         self._screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
@@ -253,11 +269,14 @@ class Game:
         big_font = pygame.font.SysFont("monospace", 32, bold=True)
 
         import pygame as pg
+
         board_rect = pg.Rect(0, bar_h, self.SCREEN_WIDTH, self.SCREEN_HEIGHT - bar_h)
 
         self._score_bar = ScoreBar(self.SCREEN_WIDTH, bar_h, font)
         self._board = GameBoard(board_rect, self.GRID_COLS, self.GRID_ROWS)
-        self._name_screen = NameEntryScreen(self.SCREEN_WIDTH, self.SCREEN_HEIGHT, big_font)
+        self._name_screen = NameEntryScreen(
+            self.SCREEN_WIDTH, self.SCREEN_HEIGHT, big_font
+        )
         self._settings = SettingsMenu(self.SCREEN_WIDTH, self.SCREEN_HEIGHT, font)
         self._gameover = GameOverScreen(self.SCREEN_WIDTH, self.SCREEN_HEIGHT, big_font)
 
@@ -296,6 +315,7 @@ class Game:
 
     def run(self) -> None:
         import pygame
+
         running = True
         while running:
             events = pygame.event.get()
@@ -315,9 +335,11 @@ class Game:
 
     def _handle_events(self, events: list) -> None:
         import pygame
+
         for event in events:
             if event.type == pygame.QUIT:
                 import sys
+
                 pygame.quit()
                 sys.exit()
 
@@ -340,6 +362,7 @@ class Game:
         # Gear icon click
         if self._gear_rect and self._state == GameState.PLAYING:
             import pygame as pg
+
             for event in events:
                 if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
                     if self._gear_rect.collidepoint(event.pos):
@@ -400,6 +423,7 @@ class Game:
         eaten = self._food_mgr.try_eat(*head)
         if eaten:
             from food import FOOD_POINTS, FoodType
+
             multiplier = self._score_calc.check_multiplier(self._session, now)
             self._session.score += FOOD_POINTS[eaten.food_type] * multiplier
             self._session.last_fruit_times.append(now)
@@ -415,7 +439,9 @@ class Game:
                 self._fire_achievements("eat_golden")
 
         elapsed = (now - self._session.start_time) - self._session.pause_accumulated
-        self._food_mgr.update(now, self._snake.get_body_cells(), self._snake.cell_in_front())
+        self._food_mgr.update(
+            now, self._snake.get_body_cells(), self._snake.cell_in_front()
+        )
         self._obstacle_mgr.update(now, elapsed, self._snake.get_body_cells())
 
         self._score_calc.apply_time_bonus(self._session, delta, self._snake.length)
@@ -429,7 +455,8 @@ class Game:
     def _fire_achievements(self, event: str) -> None:
         now = time.monotonic()
         new_names = self._achieve_checker.check_all(
-            self._session, self._achievements, event, now)
+            self._session, self._achievements, event, now
+        )
         for name in new_names:
             self._achievements[name] = True
             self._notify_achievement(name, now)
@@ -442,6 +469,7 @@ class Game:
 
     def _render(self) -> None:
         import pygame
+
         self._screen.fill((10, 10, 10))
 
         if self._state == GameState.NAME_ENTRY:
@@ -461,8 +489,9 @@ class Game:
             if self._state == GameState.SETTINGS:
                 self._settings.draw(self._screen, self._achievements)
             elif self._state == GameState.GAME_OVER:
-                self._gameover.draw(self._screen,
-                                    int(self._session.score) if self._session else 0)
+                self._gameover.draw(
+                    self._screen, int(self._session.score) if self._session else 0
+                )
 
         pygame.display.flip()
 
@@ -491,9 +520,13 @@ class Game:
             grid_cols=self.GRID_COLS,
             grid_rows=self.GRID_ROWS,
         )
-        self._food_mgr = self._food_cls(grid_cols=self.GRID_COLS, grid_rows=self.GRID_ROWS)
+        self._food_mgr = self._food_cls(
+            grid_cols=self.GRID_COLS, grid_rows=self.GRID_ROWS
+        )
         self._food_mgr.reset(now)
-        self._obstacle_mgr = ObstacleManager(grid_cols=self.GRID_COLS, grid_rows=self.GRID_ROWS)
+        self._obstacle_mgr = ObstacleManager(
+            grid_cols=self.GRID_COLS, grid_rows=self.GRID_ROWS
+        )
         self._obstacle_mgr.reset(now)
         self._session = _new_session()
         self._notification_queue.clear()

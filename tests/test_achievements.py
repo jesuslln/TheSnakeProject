@@ -110,6 +110,7 @@ def test_music_enjoyer_on_second_song(checker, blank):
 
 def test_music_lover_on_all_songs(checker, blank):
     from utils import get_total_songs
+
     all_songs = {f"song_{i}" for i in range(get_total_songs())}
     session = make_session(songs_played=all_songs)
     earned = checker.check_all(session, blank, "song_change", now=10.0)

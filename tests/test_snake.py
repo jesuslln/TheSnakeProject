@@ -28,7 +28,9 @@ def test_move_maintains_length(s):
 
 
 def test_wrap_right(s):
-    s._body = __import__("collections").deque([(COLS - 1, 20), (COLS - 2, 20), (COLS - 3, 20)])
+    s._body = __import__("collections").deque(
+        [(COLS - 1, 20), (COLS - 2, 20), (COLS - 3, 20)]
+    )
     s._direction = (1, 0)
     s._pending = (1, 0)
     s.move()
@@ -44,7 +46,9 @@ def test_wrap_left(s):
 
 
 def test_wrap_bottom(s):
-    s._body = __import__("collections").deque([(20, ROWS - 1), (20, ROWS - 2), (20, ROWS - 3)])
+    s._body = __import__("collections").deque(
+        [(20, ROWS - 1), (20, ROWS - 2), (20, ROWS - 3)]
+    )
     s._direction = (0, 1)
     s._pending = (0, 1)
     s.move()
@@ -94,6 +98,7 @@ def test_self_collision_false_normal(s):
 
 def test_self_collision_true(s):
     from collections import deque
+
     # Artificially place head on a body cell
     s._body = deque([(5, 5), (5, 4), (5, 5)])
     assert s.check_self_collision() is True
