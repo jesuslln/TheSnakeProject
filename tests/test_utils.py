@@ -73,3 +73,52 @@ def test_highscore_includes_duration(tmp_config):
     utils.save_highscore("dave", 500, 42.5)
     scores = utils.load_highscores("dave")
     assert scores[0]["duration"] == pytest.approx(42.5)
+
+
+# --- Storage abstraction TDD ---
+
+
+def test_is_browser_false_on_desktop():
+    assert utils.IS_BROWSER is False
+
+
+def test_file_storage_roundtrip(tmp_config):
+    utils.storage.set("alice/highscores.json", [{"score": 100}])
+    assert utils.storage.get("alice/highscores.json") == [{"score": 100}]
+
+
+def test_file_storage_missing_key_returns_empty(tmp_config):
+    assert utils.storage.get("nonexistent.json") == {}
+
+
+def test_ensure_user_dir_noop_on_browser(tmp_config, monkeypatch):
+    monkeypatch.setattr(utils, "IS_BROWSER", True)
+    utils.ensure_user_dir("bob")
+    assert not (utils.BASE_DIR / "bob").exists()
+
+
+class _FakeJS:
+    def __init__(self):
+        self._d = {}
+
+    def getItem(self, k):
+        return self._d.get(k)
+
+    def setItem(self, k, v):
+        self._d[k] = v
+
+
+def test_localstorage_backend_roundtrip():
+    backend = utils._LocalStorage.__new__(utils._LocalStorage)
+    backend._ls = _FakeJS()
+    backend.set("config.json", {"username": "carol"})
+    assert backend.get("config.json") == {"username": "carol"}
+    assert backend.get("missing.json") == {}
+
+
+def test_localstorage_backend_handles_corrupt_json():
+    fake = _FakeJS()
+    fake._d["snake:x"] = "{not json"
+    backend = utils._LocalStorage.__new__(utils._LocalStorage)
+    backend._ls = fake
+    assert backend.get("x") == {}

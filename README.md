@@ -12,6 +12,12 @@ A Python implementation of the classic Snake game using Pygame.
   - More features will be coming.
   
 
+## Play in Your Browser
+
+The game is hosted on GitHub Pages — no installation needed:
+
+**[Play Snake](https://lopezneira.github.io/TheSnakeProject/)**
+
 ## Installation
 
 ### Prerequisites
@@ -26,8 +32,15 @@ cd TheSnakeProject
 # Install dependencies
 pip install pygame
 
-# Run the game
+# Run the game (desktop)
 python game.py
+
+# Test locally in a browser (requires pygbag)
+pip install pygbag
+python -m pygbag game.py   # opens http://localhost:8000
+
+# Build static web bundle
+python -m pygbag --build game.py   # output in build/web/
 ```
 
 ## Game Controls
@@ -54,7 +67,7 @@ The following features are planned/optional:
 - ⏳ Save/Load game state (pause & resume)
 - ⏳ Replay system
 - ⏳ Multiplayer support (architecture-ready)
-- ⏳ Cloud deployment (I/O abstracted)
+- ✅ Cloud deployment (GitHub Pages via pygbag)
 
 ## Development Status
 

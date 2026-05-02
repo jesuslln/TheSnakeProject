@@ -265,8 +265,12 @@ class Game:
         self._clock = pygame.time.Clock()
 
         bar_h = int(self.SCREEN_HEIGHT * 0.10)
-        font = pygame.font.SysFont("monospace", 20, bold=True)
-        big_font = pygame.font.SysFont("monospace", 32, bold=True)
+        if utils.IS_BROWSER:
+            font = pygame.font.Font(None, 22)
+            big_font = pygame.font.Font(None, 36)
+        else:
+            font = pygame.font.SysFont("monospace", 20, bold=True)
+            big_font = pygame.font.SysFont("monospace", 32, bold=True)
 
         import pygame as pg
 
@@ -313,7 +317,8 @@ class Game:
     # Main loop
     # ------------------------------------------------------------------
 
-    def run(self) -> None:
+    async def run(self) -> None:
+        import asyncio
         import pygame
 
         running = True
@@ -328,6 +333,7 @@ class Game:
             self._render()
             if self._state == GameState.QUIT if hasattr(GameState, "QUIT") else False:
                 running = False
+            await asyncio.sleep(0)
 
     # ------------------------------------------------------------------
     # Event handling
@@ -555,5 +561,11 @@ class Game:
         self._notification_queue.append(notif)
 
 
+async def main() -> None:
+    await Game().run()
+
+
 if __name__ == "__main__":
-    Game().run()
+    import asyncio
+
+    asyncio.run(main())

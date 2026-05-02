@@ -10,3 +10,6 @@ local/*
 
 # Txt files
 *.txt
+
+# pygbag build output
+build/

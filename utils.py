@@ -1,8 +1,47 @@
 import json
+import sys
 from datetime import date
 from pathlib import Path
 
 BASE_DIR = Path(__file__).parent / "local"
+IS_BROWSER = sys.platform == "emscripten"
+
+
+class _FileStorage:
+    def get(self, key: str):
+        try:
+            return json.loads((BASE_DIR / key).read_text(encoding="utf-8"))
+        except (FileNotFoundError, json.JSONDecodeError):
+            return {}
+
+    def set(self, key: str, data) -> None:
+        path = BASE_DIR / key
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(data, indent=2), encoding="utf-8")
+
+
+class _LocalStorage:
+    def __init__(self):
+        import platform  # pygbag-injected shim
+
+        self._ls = platform.window.localStorage
+
+    def get(self, key: str):
+        raw = self._ls.getItem(f"snake:{key}")
+        if raw is None:
+            return {}
+        try:
+            return json.loads(raw)
+        except json.JSONDecodeError:
+            return {}
+
+    def set(self, key: str, data) -> None:
+        self._ls.setItem(f"snake:{key}", json.dumps(data))
+
+
+storage: _FileStorage | _LocalStorage = (
+    _LocalStorage() if IS_BROWSER else _FileStorage()
+)
 
 _ALL_ACHIEVEMENT_NAMES: list[str] = [
     # Fruit milestones
@@ -74,23 +113,24 @@ def write_json(path: Path, data: dict | list) -> None:
 
 
 def get_saved_username() -> str | None:
-    data = read_json(get_config_path())
+    data = storage.get("config.json")
     return data.get("username") if isinstance(data, dict) else None
 
 
 def save_config(data: dict) -> None:
-    write_json(get_config_path(), data)
+    storage.set("config.json", data)
 
 
 def ensure_user_dir(username: str) -> None:
-    get_save_dir(username).mkdir(parents=True, exist_ok=True)
+    if not IS_BROWSER:
+        get_save_dir(username).mkdir(parents=True, exist_ok=True)
 
 
 # --- High scores ---
 
 
 def load_highscores(username: str) -> list[dict]:
-    data = read_json(get_highscores_path(username))
+    data = storage.get(f"{username}/highscores.json")
     return data if isinstance(data, list) else []
 
 
@@ -100,14 +140,14 @@ def save_highscore(username: str, score: int, duration: float) -> None:
         {"score": score, "duration": duration, "date": date.today().isoformat()}
     )
     scores.sort(key=lambda e: e["score"], reverse=True)
-    write_json(get_highscores_path(username), scores[:10])
+    storage.set(f"{username}/highscores.json", scores[:10])
 
 
 # --- Achievements ---
 
 
 def load_achievements(username: str) -> dict[str, bool]:
-    data = read_json(get_achievements_path(username))
+    data = storage.get(f"{username}/achievements.json")
     base = {name: False for name in _ALL_ACHIEVEMENT_NAMES}
     if isinstance(data, dict):
         base.update({k: bool(v) for k, v in data.items() if k in base})
@@ -115,4 +155,4 @@ def load_achievements(username: str) -> dict[str, bool]:
 
 
 def save_achievements(username: str, achievements: dict[str, bool]) -> None:
-    write_json(get_achievements_path(username), achievements)
+    storage.set(f"{username}/achievements.json", achievements)
