@@ -12,8 +12,14 @@ describe('Action enum', () => {
   it('QUIT is 7', () => expect(Action.QUIT).toBe(7));
   it('has 8 distinct values', () => {
     const values = [
-      Action.NONE, Action.UP, Action.DOWN, Action.LEFT,
-      Action.RIGHT, Action.PAUSE, Action.CONFIRM, Action.QUIT,
+      Action.NONE,
+      Action.UP,
+      Action.DOWN,
+      Action.LEFT,
+      Action.RIGHT,
+      Action.PAUSE,
+      Action.CONFIRM,
+      Action.QUIT,
     ];
     expect(new Set(values).size).toBe(8);
   });
@@ -25,7 +31,12 @@ describe('GameState enum', () => {
   it('SETTINGS is 2', () => expect(GameState.SETTINGS).toBe(2));
   it('GAME_OVER is 3', () => expect(GameState.GAME_OVER).toBe(3));
   it('has 4 distinct values', () => {
-    const values = [GameState.NAME_ENTRY, GameState.PLAYING, GameState.SETTINGS, GameState.GAME_OVER];
+    const values = [
+      GameState.NAME_ENTRY,
+      GameState.PLAYING,
+      GameState.SETTINGS,
+      GameState.GAME_OVER,
+    ];
     expect(new Set(values).size).toBe(4);
   });
 });

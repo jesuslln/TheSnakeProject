@@ -74,6 +74,6 @@ export class Snake {
   checkSelfCollision(): boolean {
     // biome-ignore lint/style/noNonNullAssertion: body always has ≥1 element
     const h = this.body[0]!;
-    return this.body.slice(1).some(c => c.col === h.col && c.row === h.row);
+    return this.body.slice(1).some((c) => c.col === h.col && c.row === h.row);
   }
 }

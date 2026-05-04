@@ -1,5 +1,5 @@
-import type { Cell } from './types';
 import type { Rng } from './rng';
+import type { Cell } from './types';
 
 export interface Obstacle {
   cells: Cell[];
@@ -29,7 +29,7 @@ export class ObstacleManager {
   }
 
   update(now: number, elapsedGameTime: number, snakeBody: Cell[]): void {
-    this.obstacles = this.obstacles.filter(o => now - o.spawnTime < o.duration);
+    this.obstacles = this.obstacles.filter((o) => now - o.spawnTime < o.duration);
 
     if (now - this.lastSpawn >= SPAWN_INTERVAL) {
       const length = Math.min(3, Math.floor(elapsedGameTime / 60) + 1);
@@ -42,11 +42,11 @@ export class ObstacleManager {
   }
 
   checkCollision(col: number, row: number): boolean {
-    return this.obstacles.some(o => o.cells.some(c => c.col === col && c.row === row));
+    return this.obstacles.some((o) => o.cells.some((c) => c.col === col && c.row === row));
   }
 
   getAllCells(): Cell[] {
-    return this.obstacles.flatMap(o => o.cells);
+    return this.obstacles.flatMap((o) => o.cells);
   }
 
   offsetTimers(delta: number): void {
@@ -55,8 +55,8 @@ export class ObstacleManager {
 
   private pickWall(length: number, snakeBody: Cell[]): Cell[] | null {
     const occupied = new Set<string>([
-      ...snakeBody.map(c => `${c.col},${c.row}`),
-      ...this.obstacles.flatMap(o => o.cells).map(c => `${c.col},${c.row}`),
+      ...snakeBody.map((c) => `${c.col},${c.row}`),
+      ...this.obstacles.flatMap((o) => o.cells).map((c) => `${c.col},${c.row}`),
     ]);
 
     for (let attempt = 0; attempt < 20; attempt++) {
@@ -73,7 +73,7 @@ export class ObstacleManager {
         cells = Array.from({ length }, (_, i) => ({ col, row: row + i }));
       }
 
-      if (!cells.some(c => occupied.has(`${c.col},${c.row}`))) {
+      if (!cells.some((c) => occupied.has(`${c.col},${c.row}`))) {
         return cells;
       }
     }

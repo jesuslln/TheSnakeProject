@@ -1,5 +1,5 @@
-import type { Cell } from './types';
 import type { Rng } from './rng';
+import type { Cell } from './types';
 
 export enum FoodType {
   APPLE = 'apple',
@@ -44,7 +44,7 @@ export class FoodManager {
   }
 
   update(now: number, snakeBody: Cell[], cellInFront: Cell): void {
-    const regulars = this.items.filter(i => i.foodType !== FoodType.GOLDEN_APPLE);
+    const regulars = this.items.filter((i) => i.foodType !== FoodType.GOLDEN_APPLE);
 
     if (regulars.length === 0) {
       const cell = this.pickCell(snakeBody, cellInFront);
@@ -53,7 +53,10 @@ export class FoodManager {
         this.items.push({ col: cell.col, row: cell.row, foodType: type });
         this.lastRegularSpawn = now;
       }
-    } else if (regulars.length < MAX_REGULAR && now - this.lastRegularSpawn >= REGULAR_SPAWN_INTERVAL) {
+    } else if (
+      regulars.length < MAX_REGULAR &&
+      now - this.lastRegularSpawn >= REGULAR_SPAWN_INTERVAL
+    ) {
       const cell = this.pickCell(snakeBody, cellInFront);
       if (cell) {
         const type = this.rng.next() < 0.5 ? FoodType.APPLE : FoodType.BANANA;
@@ -62,7 +65,7 @@ export class FoodManager {
       }
     }
 
-    const hasGolden = this.items.some(i => i.foodType === FoodType.GOLDEN_APPLE);
+    const hasGolden = this.items.some((i) => i.foodType === FoodType.GOLDEN_APPLE);
     if (!hasGolden && now - this.lastGoldenSpawn >= GOLDEN_SPAWN_INTERVAL) {
       const cell = this.pickCell(snakeBody, cellInFront);
       if (cell) {
@@ -73,7 +76,7 @@ export class FoodManager {
   }
 
   tryEat(col: number, row: number): FoodItem | null {
-    const idx = this.items.findIndex(i => i.col === col && i.row === row);
+    const idx = this.items.findIndex((i) => i.col === col && i.row === row);
     if (idx === -1) return null;
     // biome-ignore lint/style/noNonNullAssertion: idx !== -1 guarantees splice returns ≥1 element
     return this.items.splice(idx, 1)[0]!;
@@ -89,7 +92,7 @@ export class FoodManager {
   }
 
   private pickCell(snakeBody: Cell[], cellInFront: Cell): Cell | null {
-    const occupied = new Set<string>(snakeBody.map(c => `${c.col},${c.row}`));
+    const occupied = new Set<string>(snakeBody.map((c) => `${c.col},${c.row}`));
     occupied.add(`${cellInFront.col},${cellInFront.row}`);
     for (const item of this.items) {
       occupied.add(`${item.col},${item.row}`);

@@ -35,10 +35,7 @@ export function computeLayout(): Layout {
   };
 }
 
-export function setupCanvas(
-  canvas: HTMLCanvasElement,
-  layout: Layout,
-): CanvasRenderingContext2D {
+export function setupCanvas(canvas: HTMLCanvasElement, layout: Layout): CanvasRenderingContext2D {
   const dpr = window.devicePixelRatio || 1;
   canvas.style.width = `${layout.canvasW}px`;
   canvas.style.height = `${layout.canvasH}px`;

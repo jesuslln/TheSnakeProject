@@ -1,19 +1,19 @@
-import { Snake } from '../game/snake';
-import { FoodManager, FoodType, FOOD_POINTS } from '../game/food';
-import { ObstacleManager } from '../game/obstacles';
-import { ScoreCalculator } from '../game/score';
 import { checkAchievements } from '../game/achievements';
+import { FOOD_POINTS, FoodManager, FoodType } from '../game/food';
+import { ObstacleManager } from '../game/obstacles';
+import type { Rng } from '../game/rng';
+import { ScoreCalculator } from '../game/score';
 import { newSession, pushFruitTime } from '../game/session';
 import type { SessionState } from '../game/session';
+import { Snake } from '../game/snake';
 import { Action, GameState } from '../game/types';
-import type { Rng } from '../game/rng';
-import type { Storage } from '../storage/storage';
 import type { Keyboard } from '../input/keyboard';
+import type { Storage } from '../storage/storage';
 import { drawBoard } from '../ui/board';
-import { drawScoreBar } from '../ui/score-bar';
+import type { Layout } from '../ui/canvas';
 import { drawGameOver } from '../ui/game-over';
 import { NotificationManager } from '../ui/notifications';
-import type { Layout } from '../ui/canvas';
+import { drawScoreBar } from '../ui/score-bar';
 import { DIFFICULTY_FPS, DIFFICULTY_LABEL } from './config';
 import type { DifficultyId } from './config';
 
@@ -131,10 +131,18 @@ export class Orchestrator {
     }
 
     switch (action) {
-      case Action.UP:    this.snake.setDirection(0, -1);  break;
-      case Action.DOWN:  this.snake.setDirection(0, 1);   break;
-      case Action.LEFT:  this.snake.setDirection(-1, 0);  break;
-      case Action.RIGHT: this.snake.setDirection(1, 0);   break;
+      case Action.UP:
+        this.snake.setDirection(0, -1);
+        break;
+      case Action.DOWN:
+        this.snake.setDirection(0, 1);
+        break;
+      case Action.LEFT:
+        this.snake.setDirection(-1, 0);
+        break;
+      case Action.RIGHT:
+        this.snake.setDirection(1, 0);
+        break;
     }
 
     this.gameTime += dt;
@@ -207,8 +215,7 @@ export class Orchestrator {
 
     if (this.state === GameState.NAME_ENTRY) return;
 
-    const multiplierActive =
-      this.scoreCalc.checkMultiplier(this.session, this.gameTime) > 1;
+    const multiplierActive = this.scoreCalc.checkMultiplier(this.session, this.gameTime) > 1;
 
     drawScoreBar(ctx, layout, {
       score: this.session.score,

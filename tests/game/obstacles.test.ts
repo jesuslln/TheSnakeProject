@@ -148,8 +148,8 @@ describe('ObstacleManager wall shape', () => {
     m.reset(0);
     m.update(30, 90, EMPTY_BODY);
     const cells = m.obstacles[0]!.cells;
-    const sameRow = cells.every(c => c.row === cells[0]!.row);
-    const sameCol = cells.every(c => c.col === cells[0]!.col);
+    const sameRow = cells.every((c) => c.row === cells[0]!.row);
+    const sameCol = cells.every((c) => c.col === cells[0]!.col);
     expect(sameRow || sameCol).toBe(true);
   });
 
@@ -159,9 +159,9 @@ describe('ObstacleManager wall shape', () => {
       m.reset(0);
       m.update(30, 90, EMPTY_BODY);
       const cells = m.obstacles[0]!.cells;
-      const sameRow = cells.every(c => c.row === cells[0]!.row);
+      const sameRow = cells.every((c) => c.row === cells[0]!.row);
       if (sameRow) {
-        const cols = cells.map(c => c.col).sort((a, b) => a - b);
+        const cols = cells.map((c) => c.col).sort((a, b) => a - b);
         for (let i = 1; i < cols.length; i++) {
           expect(cols[i]!).toBe(cols[i - 1]! + 1);
         }

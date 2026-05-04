@@ -23,5 +23,17 @@
   },
   "files": {
     "ignore": ["dist", "node_modules", ".git", "*.config.ts"]
-  }
+  },
+  "overrides": [
+    {
+      "include": ["tests/**/*.ts"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noNonNullAssertion": "off"
+          }
+        }
+      }
+    }
+  ]
 }

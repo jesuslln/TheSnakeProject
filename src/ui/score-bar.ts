@@ -42,8 +42,12 @@ export function drawScoreBar(
   ctx.textAlign = 'center';
   ctx.font = FONT;
   ctx.fillStyle = '#94a3b8';
-  const m = Math.floor(data.elapsedSeconds / 60).toString().padStart(2, '0');
-  const s = Math.floor(data.elapsedSeconds % 60).toString().padStart(2, '0');
+  const m = Math.floor(data.elapsedSeconds / 60)
+    .toString()
+    .padStart(2, '0');
+  const s = Math.floor(data.elapsedSeconds % 60)
+    .toString()
+    .padStart(2, '0');
   ctx.fillText(`${m}:${s}`, canvasW / 2, cy);
 
   ctx.textAlign = 'right';

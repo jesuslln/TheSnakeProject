@@ -13,13 +13,8 @@ export class NotificationManager {
     this.items.push({ text, t: now });
   }
 
-  draw(
-    ctx: CanvasRenderingContext2D,
-    canvasW: number,
-    canvasH: number,
-    now: number,
-  ): void {
-    this.items = this.items.filter(n => now - n.t < DURATION);
+  draw(ctx: CanvasRenderingContext2D, canvasW: number, canvasH: number, now: number): void {
+    this.items = this.items.filter((n) => now - n.t < DURATION);
     const visible = this.items.slice(-4);
 
     for (const [i, n] of visible.entries()) {

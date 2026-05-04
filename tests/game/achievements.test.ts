@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { checkAchievements, ALL_ACHIEVEMENT_NAMES, TOTAL_SONGS } from '../../src/game/achievements';
+import { ALL_ACHIEVEMENT_NAMES, TOTAL_SONGS, checkAchievements } from '../../src/game/achievements';
 import { newSession } from '../../src/game/session';
 
 function noExisting(): Record<string, boolean> {
@@ -7,7 +7,7 @@ function noExisting(): Record<string, boolean> {
 }
 
 function allExisting(): Record<string, boolean> {
-  return Object.fromEntries(ALL_ACHIEVEMENT_NAMES.map(n => [n, true]));
+  return Object.fromEntries(ALL_ACHIEVEMENT_NAMES.map((n) => [n, true]));
 }
 
 function makeSession(overrides: Partial<ReturnType<typeof newSession>> = {}) {
@@ -72,36 +72,48 @@ describe('Fruit milestone achievements', () => {
 
   it('A Healthy Diet not earned at 99 fruits', () => {
     const session = makeSession({ totalFruits: 99 });
-    expect(checkAchievements(session, noExisting(), 'eat_apple', 1)).not.toContain('A Healthy Diet');
+    expect(checkAchievements(session, noExisting(), 'eat_apple', 1)).not.toContain(
+      'A Healthy Diet',
+    );
   });
 });
 
 describe('Apple achievements', () => {
   it('Snow White and the 7 Apples earned at 7 apples', () => {
     const session = makeSession({ applesEaten: 7 });
-    expect(checkAchievements(session, noExisting(), 'eat_apple', 1)).toContain('Snow White and the 7 Apples');
+    expect(checkAchievements(session, noExisting(), 'eat_apple', 1)).toContain(
+      'Snow White and the 7 Apples',
+    );
   });
 
   it('Snow White not earned at 6 apples', () => {
     const session = makeSession({ applesEaten: 6 });
-    expect(checkAchievements(session, noExisting(), 'eat_apple', 1)).not.toContain('Snow White and the 7 Apples');
+    expect(checkAchievements(session, noExisting(), 'eat_apple', 1)).not.toContain(
+      'Snow White and the 7 Apples',
+    );
   });
 
   it('One Apple a day... earned at 30 apples', () => {
     const session = makeSession({ applesEaten: 30 });
-    expect(checkAchievements(session, noExisting(), 'eat_apple', 1)).toContain('One Apple a day...');
+    expect(checkAchievements(session, noExisting(), 'eat_apple', 1)).toContain(
+      'One Apple a day...',
+    );
   });
 });
 
 describe('Banana achievements', () => {
   it('King of the Jungle earned at 10 bananas', () => {
     const session = makeSession({ bananasEaten: 10 });
-    expect(checkAchievements(session, noExisting(), 'eat_banana', 1)).toContain('King of the Jungle');
+    expect(checkAchievements(session, noExisting(), 'eat_banana', 1)).toContain(
+      'King of the Jungle',
+    );
   });
 
   it('Canary Island day earned at 30 bananas', () => {
     const session = makeSession({ bananasEaten: 30 });
-    expect(checkAchievements(session, noExisting(), 'eat_banana', 1)).toContain('Canary Island day');
+    expect(checkAchievements(session, noExisting(), 'eat_banana', 1)).toContain(
+      'Canary Island day',
+    );
   });
 
   it('Donkey Kong earned at 100 bananas', () => {
@@ -111,7 +123,9 @@ describe('Banana achievements', () => {
 
   it('King of the Jungle not earned at 9 bananas', () => {
     const session = makeSession({ bananasEaten: 9 });
-    expect(checkAchievements(session, noExisting(), 'eat_banana', 1)).not.toContain('King of the Jungle');
+    expect(checkAchievements(session, noExisting(), 'eat_banana', 1)).not.toContain(
+      'King of the Jungle',
+    );
   });
 });
 
@@ -133,12 +147,16 @@ describe('Death achievements', () => {
 
   it('Follow the Light not triggered on non-die event', () => {
     const session = makeSession({ deaths: 1 });
-    expect(checkAchievements(session, noExisting(), 'eat_apple', 10)).not.toContain('Follow the Light');
+    expect(checkAchievements(session, noExisting(), 'eat_apple', 10)).not.toContain(
+      'Follow the Light',
+    );
   });
 
   it('Lord of the Dead not triggered on eat event', () => {
     const session = makeSession({ deaths: 1000 });
-    expect(checkAchievements(session, noExisting(), 'eat_apple', 10)).not.toContain('Lord of the Dead');
+    expect(checkAchievements(session, noExisting(), 'eat_apple', 10)).not.toContain(
+      'Lord of the Dead',
+    );
   });
 });
 
@@ -156,7 +174,9 @@ describe('Snake is my passion', () => {
 
   it('not earned when dying at or after 5s', () => {
     const session = makeSession({ startTime: 0, deaths: 1 });
-    expect(checkAchievements(session, noExisting(), 'die', 5.0)).not.toContain('Snake is my passion');
+    expect(checkAchievements(session, noExisting(), 'die', 5.0)).not.toContain(
+      'Snake is my passion',
+    );
   });
 
   it('accounts for paused time', () => {
@@ -174,7 +194,9 @@ describe('Music achievements', () => {
 
   it('Music Enjoyer not earned with 1 song played', () => {
     const session = makeSession({ songsPlayed: new Set(['a']) });
-    expect(checkAchievements(session, noExisting(), 'song_change', 1)).not.toContain('Music Enjoyer');
+    expect(checkAchievements(session, noExisting(), 'song_change', 1)).not.toContain(
+      'Music Enjoyer',
+    );
   });
 
   it('Music Enjoyer not triggered on non-song_change event', () => {

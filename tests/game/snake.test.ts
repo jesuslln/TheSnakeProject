@@ -251,14 +251,23 @@ describe('checkSelfCollision', () => {
   it('detects collision when head hits body', () => {
     // Build snake of length 5, then turn into itself
     const s = makeSnake(5, 5);
-    s.grow(); s.grow(); s.grow(); s.grow();
-    s.move(); s.move(); s.move(); s.move();
+    s.grow();
+    s.grow();
+    s.grow();
+    s.grow();
+    s.move();
+    s.move();
+    s.move();
+    s.move();
     // body: [(9,5),(8,5),(7,5),(6,5),(5,5)]
-    s.setDirection(0, -1); s.move();
+    s.setDirection(0, -1);
+    s.move();
     // body: [(9,4),(9,5),(8,5),(7,5),(6,5)]
-    s.setDirection(-1, 0); s.move();
+    s.setDirection(-1, 0);
+    s.move();
     // body: [(8,4),(9,4),(9,5),(8,5),(7,5)]
-    s.setDirection(0, 1); s.move();
+    s.setDirection(0, 1);
+    s.move();
     // head moves to (8,5), which is in body
     expect(s.checkSelfCollision()).toBe(true);
   });

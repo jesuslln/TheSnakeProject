@@ -1,11 +1,11 @@
+import { Orchestrator } from './app/orchestrator';
+import { startEngine } from './engine';
+import { mathRng } from './game/rng';
 import { Keyboard } from './input/keyboard';
 import { LocalStorage } from './storage/local-storage';
-import { mathRng } from './game/rng';
-import { Orchestrator } from './app/orchestrator';
+import { computeLayout, setupCanvas } from './ui/canvas';
 import { NameEntryOverlay } from './ui/name-entry';
 import { SettingsOverlay } from './ui/settings';
-import { computeLayout, setupCanvas } from './ui/canvas';
-import { startEngine } from './engine';
 
 const canvas = document.getElementById('game') as HTMLCanvasElement;
 
@@ -20,7 +20,7 @@ const nameEntry = new NameEntryOverlay();
 const settings = new SettingsOverlay();
 
 orchestrator.setOpenSettingsCallback(() => {
-  settings.show(orchestrator.getDifficultyId(), result => {
+  settings.show(orchestrator.getDifficultyId(), (result) => {
     orchestrator.applySettings(result.difficulty);
   });
 });
@@ -32,7 +32,7 @@ window.addEventListener('resize', () => {
 
 async function init(): Promise<void> {
   await orchestrator.init();
-  nameEntry.show(orchestrator.getPlayerName(), name => {
+  nameEntry.show(orchestrator.getPlayerName(), (name) => {
     nameEntry.hide();
     orchestrator.submitName(name);
   });
@@ -42,6 +42,6 @@ void init();
 
 startEngine(
   () => orchestrator.getTickInterval(),
-  dt => orchestrator.tick(dt),
+  (dt) => orchestrator.tick(dt),
   () => orchestrator.render(ctx, layout),
 );

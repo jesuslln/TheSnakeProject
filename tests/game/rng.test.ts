@@ -90,10 +90,10 @@ describe('mulberry32', () => {
       const idx = rng.nextInt(0, 2);
       counts[idx] = (counts[idx] ?? 0) + 1;
     }
-    counts.forEach(c => {
+    for (const c of counts) {
       expect(c).toBeGreaterThan(750);
       expect(c).toBeLessThan(1250);
-    });
+    }
   });
 
   it('sequence is deterministic after many draws', () => {

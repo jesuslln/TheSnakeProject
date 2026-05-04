@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { FoodManager, FoodType, FOOD_POINTS } from '../../src/game/food';
+import { FOOD_POINTS, FoodManager, FoodType } from '../../src/game/food';
 import { mulberry32 } from '../../src/game/rng';
 import type { Cell } from '../../src/game/types';
 
@@ -38,7 +38,7 @@ describe('FoodManager regular food spawning', () => {
     const m = makeManager();
     m.reset(0);
     m.update(0, EMPTY_BODY, FRONT);
-    const items = m.getAllItems().filter(i => i.foodType !== FoodType.GOLDEN_APPLE);
+    const items = m.getAllItems().filter((i) => i.foodType !== FoodType.GOLDEN_APPLE);
     expect(items).toHaveLength(1);
   });
 
@@ -47,7 +47,7 @@ describe('FoodManager regular food spawning', () => {
     m.reset(0);
     m.update(0, EMPTY_BODY, FRONT);
     m.update(5, EMPTY_BODY, FRONT);
-    const items = m.getAllItems().filter(i => i.foodType !== FoodType.GOLDEN_APPLE);
+    const items = m.getAllItems().filter((i) => i.foodType !== FoodType.GOLDEN_APPLE);
     expect(items.length).toBeGreaterThanOrEqual(2);
   });
 
@@ -56,7 +56,7 @@ describe('FoodManager regular food spawning', () => {
     m.reset(0);
     m.update(0, EMPTY_BODY, FRONT);
     m.update(4.9, EMPTY_BODY, FRONT);
-    const items = m.getAllItems().filter(i => i.foodType !== FoodType.GOLDEN_APPLE);
+    const items = m.getAllItems().filter((i) => i.foodType !== FoodType.GOLDEN_APPLE);
     expect(items).toHaveLength(1);
   });
 
@@ -68,7 +68,7 @@ describe('FoodManager regular food spawning', () => {
     m.update(10, EMPTY_BODY, FRONT);
     m.update(15, EMPTY_BODY, FRONT);
     m.update(20, EMPTY_BODY, FRONT);
-    const items = m.getAllItems().filter(i => i.foodType !== FoodType.GOLDEN_APPLE);
+    const items = m.getAllItems().filter((i) => i.foodType !== FoodType.GOLDEN_APPLE);
     expect(items.length).toBeLessThanOrEqual(3);
   });
 
@@ -79,7 +79,7 @@ describe('FoodManager regular food spawning', () => {
     const first = m.getAllItems()[0];
     if (first) m.tryEat(first.col, first.row);
     m.update(1, EMPTY_BODY, FRONT);
-    const items = m.getAllItems().filter(i => i.foodType !== FoodType.GOLDEN_APPLE);
+    const items = m.getAllItems().filter((i) => i.foodType !== FoodType.GOLDEN_APPLE);
     expect(items).toHaveLength(1);
   });
 
@@ -89,7 +89,7 @@ describe('FoodManager regular food spawning', () => {
     m.update(0, EMPTY_BODY, FRONT);
     m.update(5, EMPTY_BODY, FRONT);
     m.update(10, EMPTY_BODY, FRONT);
-    const regulars = m.getAllItems().filter(i => i.foodType !== FoodType.GOLDEN_APPLE);
+    const regulars = m.getAllItems().filter((i) => i.foodType !== FoodType.GOLDEN_APPLE);
     for (const item of regulars) {
       expect([FoodType.APPLE, FoodType.BANANA]).toContain(item.foodType);
     }
@@ -102,7 +102,7 @@ describe('FoodManager golden apple', () => {
     m.reset(0);
     m.update(0, EMPTY_BODY, FRONT);
     m.update(30, EMPTY_BODY, FRONT);
-    const golden = m.getAllItems().filter(i => i.foodType === FoodType.GOLDEN_APPLE);
+    const golden = m.getAllItems().filter((i) => i.foodType === FoodType.GOLDEN_APPLE);
     expect(golden).toHaveLength(1);
   });
 
@@ -111,7 +111,7 @@ describe('FoodManager golden apple', () => {
     m.reset(0);
     m.update(0, EMPTY_BODY, FRONT);
     m.update(29.9, EMPTY_BODY, FRONT);
-    const golden = m.getAllItems().filter(i => i.foodType === FoodType.GOLDEN_APPLE);
+    const golden = m.getAllItems().filter((i) => i.foodType === FoodType.GOLDEN_APPLE);
     expect(golden).toHaveLength(0);
   });
 
@@ -131,7 +131,7 @@ describe('FoodManager golden apple', () => {
     m.reset(0);
     m.update(30, EMPTY_BODY, FRONT);
     m.update(60, EMPTY_BODY, FRONT);
-    const golden = m.getAllItems().filter(i => i.foodType === FoodType.GOLDEN_APPLE);
+    const golden = m.getAllItems().filter((i) => i.foodType === FoodType.GOLDEN_APPLE);
     expect(golden).toHaveLength(1);
   });
 });
@@ -184,7 +184,7 @@ describe('FoodManager placement constraints', () => {
     m.update(0, body, FRONT);
     const items = m.getAllItems();
     for (const item of items) {
-      const onBody = body.some(c => c.col === item.col && c.row === item.row);
+      const onBody = body.some((c) => c.col === item.col && c.row === item.row);
       expect(onBody).toBe(false);
     }
   });
@@ -195,7 +195,7 @@ describe('FoodManager placement constraints', () => {
     m.update(0, EMPTY_BODY, FRONT);
     m.offsetTimers(30);
     m.update(30, EMPTY_BODY, FRONT);
-    const golden = m.getAllItems().filter(i => i.foodType === FoodType.GOLDEN_APPLE);
+    const golden = m.getAllItems().filter((i) => i.foodType === FoodType.GOLDEN_APPLE);
     expect(golden).toHaveLength(0);
   });
 });

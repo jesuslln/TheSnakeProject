@@ -41,13 +41,15 @@ export class SettingsOverlay {
       <fieldset style="border:none;padding:0;margin-bottom:28px">
         <legend style="color:#94a3b8;margin-bottom:12px;font-size:.85rem">Difficulty</legend>
         <div style="display:flex;flex-direction:column;gap:10px">
-          ${DIFFICULTIES.map(d => `
+          ${DIFFICULTIES.map(
+            (d) => `
             <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
               <input type="radio" name="diff" value="${d.id}" style="accent-color:#4ade80"/>
               <span style="color:#e2e8f0">${d.label}</span>
               <span style="color:#4b5563;font-size:.8rem">${d.fps} FPS</span>
             </label>
-          `).join('')}
+          `,
+          ).join('')}
         </div>
       </fieldset>
       <button id="settings-resume" style="
@@ -76,9 +78,7 @@ export class SettingsOverlay {
 
   private trapFocus(e: KeyboardEvent): void {
     const focusable = Array.from(
-      this.el.querySelectorAll<HTMLElement>(
-        'button:not([disabled]), input:not([disabled])',
-      ),
+      this.el.querySelectorAll<HTMLElement>('button:not([disabled]), input:not([disabled])'),
     );
     const first = focusable[0];
     const last = focusable[focusable.length - 1];
