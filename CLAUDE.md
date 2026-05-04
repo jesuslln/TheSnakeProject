@@ -1,68 +1,92 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code when working with code in this repository.
 
-## Project Status
+## Project Overview
 
-This project is in the **specification phase** — no source code has been written yet. The full requirements live in `Project Title Snake Game (Python).txt`. Implement from that spec.
+A Snake game running natively in the browser via TypeScript + HTML5 Canvas, deployed to GitHub Pages.
+
+**Python/Pygame predecessor:** archived on the `python-archive` branch, tagged `python-v1.0`.
 
 ## Tech Stack
 
-- **Python** + **Pygame**
-- JSON files for persistence (`highscores.json`, `achievements.json`)
-- No external dependencies beyond Pygame
+- **TypeScript 5** (strict mode, `exactOptionalPropertyTypes`)
+- **Vite 5** — dev server + bundler (`base: '/TheSnakeProject/'`)
+- **Vitest** — unit tests (`tests/**/*.test.ts`, excludes `tests/e2e/`)
+- **Playwright** — E2E smoke tests (`tests/e2e/`)
+- **Biome** — linter + formatter (replaces ESLint+Prettier)
+- No game framework — pure HTML5 Canvas
 
-## Running the Game
+## Running Locally
 
 ```bash
-python game.py
+npm install
+npm run dev        # http://localhost:5173/TheSnakeProject/
+npm test           # unit tests
+npm run build      # production build → dist/
+npm run preview    # preview production build locally
 ```
 
-(Once implemented — entry point should be `game.py` or a dedicated `main.py`.)
+## Module Structure
 
-## Planned Module Structure
+| Path | Responsibility |
+|---|---|
+| `src/main.ts` | Entry point — bootstraps the engine |
+| `src/engine.ts` | rAF game loop with fixed-timestep accumulator |
+| `src/game/` | **Pure logic — no DOM, no Web APIs** |
+| `src/game/types.ts` | `Action` and `GameState` enums |
+| `src/game/grid.ts` | `mod(x, n)` helper — fixes JS negative-modulo |
+| `src/game/snake.ts` | Snake entity: movement, wrapping, growth, collision |
+| `src/game/food.ts` | Food spawning (apple, banana, golden apple) |
+| `src/game/score.ts` | Time bonus rates + 2× multiplier logic |
+| `src/game/achievements.ts` | 15 achievements, all conditions, dedup |
+| `src/game/obstacles.ts` | Spawning walls (30s interval, 10s lifetime) |
+| `src/game/session.ts` | Per-game mutable state |
+| `src/game/rng.ts` | Seedable RNG interface + mulberry32 impl |
+| `src/game/clock.ts` | `Clock` interface + real/fake impls |
+| `src/app/orchestrator.ts` | Wires all modules; replaces Python `Game` class |
+| `src/ui/` | Canvas rendering — no game logic |
+| `src/input/keyboard.ts` | Key → Action mapping; `preventDefault` on arrows |
+| `src/storage/storage.ts` | Async `Storage` interface |
+| `src/storage/local-storage.ts` | `localStorage` implementation (`snake:` prefix) |
+| `src/audio/audio-engine.ts` | Lazy `AudioContext`; webkit fallback |
 
-| File | Responsibility |
-|------|---------------|
-| `game.py` | Main game loop, state machine (playing / game-over / settings) |
-| `snake.py` | Snake entity: position list, movement, growth, self-collision |
-| `food.py` | Food spawning/timing logic for apples, bananas, golden apples |
-| `ui.py` | Static top bar, score display, settings menu, achievement overlay |
-| `utils.py` | Shared helpers (grid math, JSON save/load, user folder paths) |
+## Key Game Rules (non-obvious)
 
-Save files go in a subfolder named after the current OS user: `<username>/highscores.json` and `<username>/achievements.json`.
+**Wrapping** — walls are passable; each body segment wraps one at a time. Death only on self-collision or obstacle.
 
-## Key Game Rules (non-obvious details)
+**Food** — max 3 regular fruits on screen; new fruit spawns every 5 s or immediately if screen is empty (resets timer). Golden apple spawns on a separate 30 s timer; doesn't count against the 3-food cap.
 
-**Collision / wrapping** — when any body segment would leave the grid, it reappears on the opposite edge *one segment at a time*, following the same path. The snake only dies on self-collision, never wall collision.
+**Score** — apple = 25, banana = 50, golden apple = 200. Time bonus: +1/s (length < 7), +5/s (≥ 7), +10/s (≥ 14). 2× multiplier when 3 fruits eaten within 10 s. Clock pauses while settings are open.
 
-**Food spawning** — max 3 fruits on screen simultaneously; new fruit spawns every 5 seconds *or* immediately when the screen has zero fruits (and resets the 5-second timer). Food must not spawn on the snake's body or directly in front of the head. Golden Apple spawns on a separate 30-second timer.
+**Obstacles** — one static wall every 30 s. Length = `min(3, floor(elapsed_minutes) + 1)`. Each wall lasts 10 s. Snake dies on contact.
 
-**Score** — food points: apple = 25 pts, banana = 50 pts, golden apple = 200 pts. Time bonus: +1 pt/sec (default), +5 pts/sec (snake length ≥ 7), +10 pts/sec (length ≥ 14). The clock pauses while the settings menu is open. Top 10 runs (score + duration) are persisted.
+**Difficulty** — FPS-based: Slow = 5, Normal = 10, Fast = 15. Custom option available.
 
-**Difficulty** — implemented as FPS: Slow = 5, Normal = 10, Fast = 15. A "Custom" option lets the user set speed manually.
-
-**Obstacles (optional)** — one static wall appears every 30 seconds. Wall length grows by 1 square each minute (1 sq in minute 1, 2 sq in minute 2, 3 sq in minute 3). Each wall lasts 10 seconds. Snake dies on obstacle contact.
-
-**Game over / reset** — Spacebar restarts. Everything resets except achievements (achievements are cumulative across all runs and are never cleared).
-
-## Achievements System
-
-Achievements are stored permanently in `<username>/achievements.json`. Once earned, they are **not re-displayed** in subsequent runs. The top bar shows the achievement title when one is earned (the space not used by score/settings button).
-
-Required named achievements (exact names are mandatory where marked):
-- "Snow White and the 7 Apples" — eat 7 apples (**mandatory name**)
-- "Canary Island day" — eat 30 bananas (**mandatory name**)
-- "Snake is my passion" — die within first 5 seconds (easter egg)
-- "Music Enjoyer" — change a song in settings (easter egg)
-- "Music Lover" — play all available songs (easter egg)
-
-See the spec file for the full list of required and suggested achievement names.
+**Achievements** — cumulative across runs; never reset. Not re-displayed once earned.
+Mandatory names: `"Snow White and the 7 Apples"` (7 apples), `"Canary Island day"` (30 bananas),
+`"Snake is my passion"` (die < 5 s), `"Music Enjoyer"` (change song), `"Music Lover"` (play all songs).
 
 ## Architecture Constraints
 
-**Future-proofing** — the codebase must be structured to support, without major rework:
-1. Multiplayer (design game state to be separable from input handling)
-2. Cloud/remote deployment (avoid hardcoded local-only assumptions; keep I/O behind interfaces in `utils.py`)
+**Future-proofing:**
+1. **Multiplayer** — game state must be separable from input handling; `src/game/` is pure.
+2. **Cloud/remote** — all persistence goes through `src/storage/storage.ts` interface; no direct `localStorage` calls in game logic.
 
-This means: avoid coupling game logic directly to Pygame input events or file system paths. Route all persistence through `utils.py` so the backend can be swapped later.
+**JS modulo hazard** — always use `mod(x, n)` from `src/game/grid.ts` for grid wrapping, never the raw `%` operator. `(-1) % 40 === -1` in JS but the snake must wrap to `39`.
+
+**Canvas DPR** — `canvas.width = cssW * devicePixelRatio`; `ctx.scale(dpr, dpr)`. This must be set up in `src/ui/canvas.ts` and never bypassed.
+
+**AudioContext user-gesture rule** — `AudioEngine.init()` must be called from a user-gesture handler (first key press or name-entry submit). Before init, `play()` is a no-op.
+
+## TDD Rules
+
+- For every `src/game/*.ts` module, the corresponding `tests/game/*.test.ts` must be written (failing) and committed **before** the implementation.
+- Once a test file is committed, do not edit tests during implementation — that's the TDD contract.
+- Test count parity: each TS test file must have ≥ the equivalent Python test count.
+
+## Deployment
+
+GitHub Actions → `.github/workflows/deploy.yml` builds with Vite and deploys via `actions/deploy-pages@v4`.
+Currently triggers on push to `web-version` and `main`.
+Live at: https://lopezneira.github.io/TheSnakeProject/

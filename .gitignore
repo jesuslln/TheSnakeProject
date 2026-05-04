@@ -1,12 +1,21 @@
-#Cache & Test Data
-__pycache__/*
-tests/__pycache__/*
-.pytest_cache/*
-
-
-#local Data
-local/*
+# Python (preserved on python-archive branch)
+__pycache__/
+*.pyc
+.pytest_cache/
 .coverage
+.ruff_cache/
 
-# Txt files
+# Node / Web
+node_modules/
+dist/
+build/
+
+# Local user data
+local/
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+
+# Spec / requirement text files
 *.txt
