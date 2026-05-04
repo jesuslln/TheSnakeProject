@@ -10,7 +10,19 @@
       "Bash(python -m pytest tests/ -v)",
       "Bash(ruff check *)",
       "Bash(ruff format *)",
-      "Bash(python -m pytest tests/ -q)"
+      "Bash(python -m pytest tests/ -q)",
+      "Bash(python -m pytest tests/test_utils.py -x -q)",
+      "Bash(python -m pytest tests/test_utils.py -v)",
+      "Bash(python -m pytest tests/test_game_async.py -v)",
+      "Bash(python game.py)",
+      "Bash(python -c \"import game\")",
+      "Bash(python -m pygbag --help)",
+      "Bash(python -m pygbag --build game.py)",
+      "Bash(python -c \"import tarfile; t=tarfile.open\\('thesnakeproject.tar.gz'\\); [print\\(m.name\\) for m in t.getmembers\\(\\)]\")",
+      "Bash(python -c \"import tarfile; t=tarfile.open\\('thesnakeproject.tar.gz'\\); print\\([m.name for m in t.getmembers\\(\\) if 'main' in m.name]\\)\")",
+      "Bash(git ls-tree *)",
+      "Bash(npm test *)",
+      "Bash(npx tsc *)"
     ]
   }
 }
