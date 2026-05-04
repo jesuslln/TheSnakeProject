@@ -1,25 +1,47 @@
+import { Keyboard } from './input/keyboard';
+import { LocalStorage } from './storage/local-storage';
+import { mathRng } from './game/rng';
+import { Orchestrator } from './app/orchestrator';
+import { NameEntryOverlay } from './ui/name-entry';
+import { SettingsOverlay } from './ui/settings';
+import { computeLayout, setupCanvas } from './ui/canvas';
+import { startEngine } from './engine';
+
 const canvas = document.getElementById('game') as HTMLCanvasElement;
-// biome-ignore lint/style/noNonNullAssertion: canvas 2d context always available
-const ctx = canvas.getContext('2d')!;
 
-const SIZE = Math.min(window.innerWidth, window.innerHeight, 800);
-canvas.style.width = `${SIZE}px`;
-canvas.style.height = `${SIZE}px`;
-const dpr = window.devicePixelRatio || 1;
-canvas.width = SIZE * dpr;
-canvas.height = SIZE * dpr;
-ctx.scale(dpr, dpr);
+let layout = computeLayout();
+let ctx = setupCanvas(canvas, layout);
 
-ctx.fillStyle = '#0a0a0a';
-ctx.fillRect(0, 0, SIZE, SIZE);
+const storage = new LocalStorage();
+const rng = mathRng();
+const keyboard = new Keyboard();
+const orchestrator = new Orchestrator(storage, rng, keyboard);
+const nameEntry = new NameEntryOverlay();
+const settings = new SettingsOverlay();
 
-ctx.fillStyle = '#4ade80';
-ctx.font = 'bold 28px ui-monospace, Menlo, Consolas, monospace';
-ctx.textAlign = 'center';
-ctx.textBaseline = 'middle';
-ctx.fillText('Snake', SIZE / 2, SIZE / 2 - 32);
+orchestrator.setOpenSettingsCallback(() => {
+  settings.show(orchestrator.getDifficultyId(), result => {
+    orchestrator.applySettings(result.difficulty);
+  });
+});
 
-ctx.fillStyle = '#94a3b8';
-ctx.font = '18px ui-monospace, Menlo, Consolas, monospace';
-ctx.fillText('Web Version — Phase 0 Scaffold', SIZE / 2, SIZE / 2 + 8);
-ctx.fillText('Game coming soon...', SIZE / 2, SIZE / 2 + 40);
+window.addEventListener('resize', () => {
+  layout = computeLayout();
+  ctx = setupCanvas(canvas, layout);
+});
+
+async function init(): Promise<void> {
+  await orchestrator.init();
+  nameEntry.show(orchestrator.getPlayerName(), name => {
+    nameEntry.hide();
+    orchestrator.submitName(name);
+  });
+}
+
+void init();
+
+startEngine(
+  () => orchestrator.getTickInterval(),
+  dt => orchestrator.tick(dt),
+  () => orchestrator.render(ctx, layout),
+);

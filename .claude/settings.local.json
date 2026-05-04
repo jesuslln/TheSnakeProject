@@ -22,7 +22,11 @@
       "Bash(python -c \"import tarfile; t=tarfile.open\\('thesnakeproject.tar.gz'\\); print\\([m.name for m in t.getmembers\\(\\) if 'main' in m.name]\\)\")",
       "Bash(git ls-tree *)",
       "Bash(npm test *)",
-      "Bash(npx tsc *)"
+      "Bash(npx tsc *)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\jesus\\\\Desktop\\\\Nerdy_Projects\\\\TheSnakeProject\" -Recurse -Filter \"*.ts\" -File)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(npm run *)",
+      "Bash(npx biome *)"
     ]
   }
 }
