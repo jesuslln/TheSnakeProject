@@ -1,4 +1,5 @@
 import { Orchestrator } from './app/orchestrator';
+import { AudioEngine } from './audio/audio-engine';
 import { startEngine } from './engine';
 import { mathRng } from './game/rng';
 import { Keyboard } from './input/keyboard';
@@ -15,7 +16,8 @@ let ctx = setupCanvas(canvas, layout);
 const storage = new LocalStorage();
 const rng = mathRng();
 const keyboard = new Keyboard();
-const orchestrator = new Orchestrator(storage, rng, keyboard);
+const audio = new AudioEngine();
+const orchestrator = new Orchestrator(storage, rng, keyboard, audio);
 const nameEntry = new NameEntryOverlay();
 const settings = new SettingsOverlay();
 

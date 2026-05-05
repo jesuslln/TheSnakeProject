@@ -7,6 +7,7 @@ export interface ScoreBarData {
   elapsedSeconds: number;
   difficultyLabel: string;
   multiplierActive: boolean;
+  trackLabel: string;
 }
 
 const FONT = '14px ui-monospace, Menlo, Consolas, monospace';
@@ -53,5 +54,9 @@ export function drawScoreBar(
   ctx.textAlign = 'right';
   ctx.font = FONT;
   ctx.fillStyle = '#4b5563';
-  ctx.fillText(`len ${data.snakeLength}  ${data.difficultyLabel}`, canvasW - 12, cy);
+  ctx.fillText(
+    `${data.trackLabel}  len ${data.snakeLength}  ${data.difficultyLabel}`,
+    canvasW - 12,
+    cy,
+  );
 }

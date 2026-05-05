@@ -1,3 +1,4 @@
+import type { AudioEngine } from '../audio/audio-engine';
 import { checkAchievements } from '../game/achievements';
 import { FOOD_POINTS, FoodManager, FoodType } from '../game/food';
 import { ObstacleManager } from '../game/obstacles';
@@ -45,6 +46,7 @@ export class Orchestrator {
     private readonly storage: Storage,
     private readonly rng: Rng,
     private readonly keyboard: Keyboard,
+    private readonly audio: AudioEngine,
   ) {}
 
   async init(): Promise<void> {
@@ -83,6 +85,7 @@ export class Orchestrator {
   submitName(name: string): void {
     this.playerName = name.trim() || 'Player';
     void this.storage.set('playerName', this.playerName);
+    this.audio.init();
     this.startGame();
   }
 
@@ -92,6 +95,7 @@ export class Orchestrator {
     this.obstacles = new ObstacleManager(COLS, ROWS, this.rng);
     this.session = newSession(0);
     this.session.deaths = this.cumulativeDeaths;
+    this.session.songsPlayed.add(this.audio.getCurrentTrackId());
     this.gameTime = 0;
     this.isNewHighScore = false;
     this.food.reset(0);
@@ -130,6 +134,12 @@ export class Orchestrator {
       return;
     }
 
+    if (action === Action.MUSIC_NEXT) {
+      const trackId = this.audio.nextTrack();
+      this.session.songsPlayed.add(trackId);
+      this.award(checkAchievements(this.session, this.achievements, 'song_change', this.gameTime));
+    }
+
     switch (action) {
       case Action.UP:
         this.snake.setDirection(0, -1);
@@ -161,11 +171,14 @@ export class Orchestrator {
       if (eaten.foodType === FoodType.APPLE) {
         this.session.applesEaten++;
         event = 'eat_apple';
+        this.audio.playEat();
       } else if (eaten.foodType === FoodType.BANANA) {
         this.session.bananasEaten++;
         event = 'eat_banana';
+        this.audio.playEat();
       } else {
         event = 'eat_golden';
+        this.audio.playGoldenEat();
       }
 
       this.snake.grow();
@@ -186,6 +199,7 @@ export class Orchestrator {
       if (!this.achievements[name]) {
         this.achievements[name] = true;
         this.notifications.push(name, this.gameTime);
+        this.audio.playAchievement();
         anyNew = true;
       }
     }
@@ -198,6 +212,7 @@ export class Orchestrator {
     this.session.diedEarly = this.gameTime < 5;
     void this.storage.set('cumulativeDeaths', this.cumulativeDeaths);
 
+    this.audio.playDie();
     this.award(checkAchievements(this.session, this.achievements, 'die', this.gameTime));
 
     if (this.session.score > this.highScore) {
@@ -224,6 +239,7 @@ export class Orchestrator {
       elapsedSeconds: this.gameTime,
       difficultyLabel: DIFFICULTY_LABEL[this.difficultyId],
       multiplierActive,
+      trackLabel: `♪${this.audio.getCurrentTrackId().slice(-1)}`,
     });
 
     drawBoard(

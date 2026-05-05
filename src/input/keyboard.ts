@@ -18,6 +18,8 @@ const KEY_MAP: Readonly<Record<string, Action>> = {
   Escape: Action.PAUSE,
   Enter: Action.CONFIRM,
   ' ': Action.CONFIRM,
+  m: Action.MUSIC_NEXT,
+  M: Action.MUSIC_NEXT,
 };
 
 export class Keyboard {

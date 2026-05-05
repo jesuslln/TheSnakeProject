@@ -7,6 +7,7 @@ export enum Action {
   PAUSE = 5,
   CONFIRM = 6,
   QUIT = 7,
+  MUSIC_NEXT = 8,
 }
 
 export enum GameState {

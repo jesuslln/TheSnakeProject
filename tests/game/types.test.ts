@@ -10,7 +10,8 @@ describe('Action enum', () => {
   it('PAUSE is 5', () => expect(Action.PAUSE).toBe(5));
   it('CONFIRM is 6', () => expect(Action.CONFIRM).toBe(6));
   it('QUIT is 7', () => expect(Action.QUIT).toBe(7));
-  it('has 8 distinct values', () => {
+  it('MUSIC_NEXT is 8', () => expect(Action.MUSIC_NEXT).toBe(8));
+  it('has 9 distinct values', () => {
     const values = [
       Action.NONE,
       Action.UP,
@@ -20,8 +21,9 @@ describe('Action enum', () => {
       Action.PAUSE,
       Action.CONFIRM,
       Action.QUIT,
+      Action.MUSIC_NEXT,
     ];
-    expect(new Set(values).size).toBe(8);
+    expect(new Set(values).size).toBe(9);
   });
 });
 
